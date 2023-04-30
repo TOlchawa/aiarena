@@ -22,4 +22,7 @@ public interface AArena {
     // x - width; y - height ; z - deep
     List<AResource> getResources(int x, int y, int z);
 
+    // Returns all AObjects
+    List<AObject> getAllAObjects();
+
 }

@@ -4,17 +4,14 @@ import com.thm.aiarena.model.AArena;
 import com.thm.aiarena.model.ALocation;
 import com.thm.aiarena.model.AObject;
 import com.thm.aiarena.model.AResource;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.IntStream;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 @AllArgsConstructor
 public class FlatArrayArena implements AArena {
@@ -23,7 +20,10 @@ public class FlatArrayArena implements AArena {
     private final int height;
     private final int level;
 
-    private Cell[][] arena;
+    @ToString.Exclude
+    private Cell[][] cells;
+    @ToString.Exclude
+    private List<AObject> allObjects;
 
     @Override
     public int getWidth() {
@@ -42,32 +42,49 @@ public class FlatArrayArena implements AArena {
 
     @Override
     public ALocation getLocation(int x, int y, int z) {
-        return arena[x][y].getLocation();
+        return cells[x][y].getLocation();
     }
 
     @Override
     public List<AObject> getObjects(int x, int y, int z) {
-        return arena[x][y].getLocation().getObjectSet();
+        return cells[x][y].getLocation().getAObjects();
     }
 
     @Override
     public List<AResource> getResources(int x, int y, int z) {
-        return arena[x][y].getLocation().getResourceSet();
+        return cells[x][y].getLocation().getAResources();
+    }
+
+    @Override
+    public List<AObject> getAllAObjects() {
+        return allObjects;
     }
 
     public void init() {
-        arena = new Cell[width][height];
+        allObjects = new ArrayList<>();
+        cells = new Cell[width][height];
         IntStream.range(0, width).forEach(
             x -> IntStream.range(0, height).forEach(
                 y -> {
-                    arena[x][y] = Cell.builder().location(SimpleLocation.builder()
+                    cells[x][y] = Cell.builder().location(SimpleLocation.builder()
                             .id(UUID.randomUUID())
-                            .objectSet(List.of(SimpleObject.builder().build()))
-                            .objectSet(List.of(SimpleResources.builder().build()))
+                            .x(x)
+                            .y(y)
+                            .aObjects(new ArrayList<>(1))
+                            .aResources(new ArrayList<>(1))
                             .build()).build();
                 }
             )
         );
+        addAObject(100, 100, SimpleObject.builder().build());
+        addAObject(width-100, height-100, SimpleObject.builder().build());
+    }
+
+    private void addAObject(int x, int y, SimpleObject aObject) {
+        aObject.setArena(this);
+        aObject.setLocation(this.getLocation(x, y, 0));
+        allObjects.add(aObject);
+        cells[x][y].getLocation().getAObjects().add(aObject);
     }
 
     @Data

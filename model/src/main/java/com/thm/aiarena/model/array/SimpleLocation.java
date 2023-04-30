@@ -4,16 +4,23 @@ import com.thm.aiarena.model.ALocation;
 import com.thm.aiarena.model.AObject;
 import com.thm.aiarena.model.AResource;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Builder
+@ToString
 public class SimpleLocation implements ALocation {
     UUID id;
-    List<AObject> objectSet;
-    List<AResource> resourceSet;
+    int x;
+    int y;
+    @ToString.Exclude
+    List<AObject> aObjects;
+    @ToString.Exclude
+    List<AResource> aResources;
 }
