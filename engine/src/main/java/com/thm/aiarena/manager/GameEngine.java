@@ -8,10 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
-
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 @Service
 @AllArgsConstructor
@@ -32,7 +29,7 @@ public class GameEngine {
         AObject aObj = aObjectsProvider.provideAObject();
         log.info("aObj: {}", aObj);
 
-        aObj.process();
+        aObj.operate();
 
     }
 

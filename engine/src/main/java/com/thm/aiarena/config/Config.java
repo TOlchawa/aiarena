@@ -1,7 +1,7 @@
 package com.thm.aiarena.config;
 
 import com.thm.aiarena.model.AArena;
-import com.thm.aiarena.model.array.FlatArrayArena;
+import com.thm.aiarena.model.impl.array.FlatArrayArena;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;

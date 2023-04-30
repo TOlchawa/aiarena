@@ -1,9 +1,10 @@
-package com.thm.aiarena.model.array;
+package com.thm.aiarena.model.impl.array;
 
 import com.thm.aiarena.model.AArena;
 import com.thm.aiarena.model.ALocation;
 import com.thm.aiarena.model.AObject;
 import com.thm.aiarena.model.AResource;
+import com.thm.aiarena.model.impl.*;
 import lombok.*;
 
 import java.util.*;
@@ -76,8 +77,20 @@ public class FlatArrayArena implements AArena {
                 }
             )
         );
-        addAObject(100, 100, SimpleObject.builder().build());
-        addAObject(width-100, height-100, SimpleObject.builder().build());
+        addAObject(100, 100, SimpleObject.builder()
+                .container(new SimpleContainer())
+                .manipulator(new SimpleManipulator())
+                .motorics(new SimpleMotorics())
+                .sensor(new SimpleSensor())
+                .weapon(new SimpleWeapon())
+                .build());
+        addAObject(width-100, height-100, SimpleObject.builder()
+                .container(new SimpleContainer())
+                .manipulator(new SimpleManipulator())
+                .motorics(new SimpleMotorics())
+                .sensor(new SimpleSensor())
+                .weapon(new SimpleWeapon())
+                .build());
     }
 
     private void addAObject(int x, int y, SimpleObject aObject) {
