@@ -13,4 +13,9 @@ public class SimpleObject implements AObject {
     @ToString.Exclude
     AArena arena;
     ALocation location;
+
+    @Override
+    public void process() {
+
+    }
 }
