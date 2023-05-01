@@ -1,4 +1,4 @@
-package com.thm.aiarena.model.impl;
+package com.thm.aiarena;
 
 import com.thm.aiarena.model.ALocation;
 import com.thm.aiarena.model.aobject.Motorics;

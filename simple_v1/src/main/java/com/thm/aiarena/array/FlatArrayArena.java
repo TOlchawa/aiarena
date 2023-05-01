@@ -1,13 +1,16 @@
-package com.thm.aiarena.model.impl.array;
+package com.thm.aiarena.array;
 
+import com.thm.aiarena.*;
 import com.thm.aiarena.model.AArena;
 import com.thm.aiarena.model.ALocation;
 import com.thm.aiarena.model.AObject;
 import com.thm.aiarena.model.AResource;
-import com.thm.aiarena.model.impl.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
 @Getter
@@ -15,6 +18,7 @@ import java.util.stream.IntStream;
 @ToString
 @Builder
 @AllArgsConstructor
+@Slf4j
 public class FlatArrayArena implements AArena {
 
     private final int width;
@@ -25,6 +29,8 @@ public class FlatArrayArena implements AArena {
     private Cell[][] cells;
     @ToString.Exclude
     private List<AObject> allObjects;
+    @ToString.Exclude
+    private NeuralNetworkSimpleObjectFactory aObjectFactory;
 
     @Override
     public int getWidth() {
@@ -77,25 +83,13 @@ public class FlatArrayArena implements AArena {
                 }
             )
         );
-        addAObject(100, 100, SimpleObject.builder()
-                .container(new SimpleContainer())
-                .manipulator(new SimpleManipulator())
-                .motorics(new SimpleMotorics())
-                .sensor(new SimpleSensor())
-                .weapon(new SimpleWeapon())
-                .build());
-        addAObject(width-100, height-100, SimpleObject.builder()
-                .container(new SimpleContainer())
-                .manipulator(new SimpleManipulator())
-                .motorics(new SimpleMotorics())
-                .sensor(new SimpleSensor())
-                .weapon(new SimpleWeapon())
-                .build());
+        addAObject(100, 100, aObjectFactory.create());
+        addAObject(width-100, height-100, aObjectFactory.create());
     }
 
-    private void addAObject(int x, int y, SimpleObject aObject) {
-        aObject.setArena(this);
-        aObject.setLocation(this.getLocation(x, y, 0));
+    private void addAObject(int x, int y, NeuralNetworkSimpleObject aObject) {
+        aObject.withArena(this);
+        aObject.withLocation(this.getLocation(x, y, 0));
         allObjects.add(aObject);
         cells[x][y].getLocation().getAObjects().add(aObject);
     }

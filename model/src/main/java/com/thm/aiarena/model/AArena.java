@@ -1,7 +1,5 @@
 package com.thm.aiarena.model;
 
-import lombok.Data;
-
 import java.util.List;
 
 public interface AArena {

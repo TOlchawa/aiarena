@@ -1,4 +1,4 @@
-package com.thm.aiarena.model.impl.array;
+package com.thm.aiarena.array;
 
 import com.thm.aiarena.model.AResource;
 import lombok.Builder;
