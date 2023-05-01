@@ -14,4 +14,7 @@ public class SimpleNeuralNetwork {
         return ai.think(input);
     }
 
+    public void save(String filename) {
+        ai.save(filename);
+    }
 }

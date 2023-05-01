@@ -11,8 +11,8 @@ public class SimpleContainer implements Container {
 
     private SimpleObject subject;
 
-    private int MAX_CAPACITY = 10000;
-    private int resource = 1000;
+    private int MAX_CAPACITY = 100000;
+    private int value = 10000;
 
     public SimpleContainer(SimpleObject subject) {
         this.subject = subject;
@@ -21,7 +21,7 @@ public class SimpleContainer implements Container {
     @Override
     public int inventory(int type) {
         log.debug("Container::inventory");
-        return resource;
+        return value;
     }
 
     @Override
@@ -33,8 +33,8 @@ public class SimpleContainer implements Container {
     @Override
     public int change(int resource, int delta) {
         log.debug ("Container::change");
-        int result = delta;
-        resource = Math.max(0, result);
+        int result = this.value - delta;
+        this.value = Math.max(0, result);
         return result;
     }
 }

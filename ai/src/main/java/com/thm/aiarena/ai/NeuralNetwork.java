@@ -1,11 +1,16 @@
 package com.thm.aiarena.ai;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Random;
 import java.util.stream.IntStream;
 
 public class NeuralNetwork {
 
-    private final Layer[] layers;
+    private Layer[] layers;
 
     public NeuralNetwork(Random neuralNetworkRandom) {
         layers = new Layer[4];
@@ -52,6 +57,35 @@ public class NeuralNetwork {
             result = result << 1;
         }
         return result;
+    }
+
+    public void save(String fileName) {
+        Path filePath = Path.of(fileName);
+
+        try (DataOutputStream outputStream = new DataOutputStream(Files.newOutputStream(filePath))) {
+            outputStream.writeInt(layers.length);
+            for (int i=0; i<layers.length; i++) {
+                layers[i].save(outputStream);
+            }
+        } catch (IOException e) {
+            System.err.println("Error saving weights to file: " + e.getMessage());
+        }
+
+    }
+
+    public void load(String fileName) {
+        Path filePath = Path.of(fileName);
+
+        try (DataInputStream inputStream = new DataInputStream(Files.newInputStream(filePath))) {
+            int layersCount = inputStream.readInt();
+            layers = new Layer[layersCount];
+            for (int i=0; i<layersCount; i++) {
+                layers[i].load(inputStream);
+            }
+        } catch (IOException e) {
+            System.err.println("Error saving weights to file: " + e.getMessage());
+        }
+
     }
 
 }

@@ -89,9 +89,16 @@ public class FlatArrayArena implements AArena {
                 }
             )
         );
-        addAObject(100, 100, aObjectFactory.create(1));
-        addAObject(100, 101, aObjectFactory.create(2));
-        addAObject(101, 101, aObjectFactory.create(1));
+
+        IntStream.range(400, 500).forEach( x -> {
+            IntStream.range(400, 500).forEach( y-> {
+                addAObject(x, y, aObjectFactory.create((x+y) % 5));
+            });
+        });
+
+//        addAObject(100, 100, aObjectFactory.create(1));
+//        addAObject(100, 101, aObjectFactory.create(2));
+//        addAObject(101, 101, aObjectFactory.create(1));
 //        addAObject(width-100, height-100, aObjectFactory.create());
 //        addAObject(width-101, height-100, aObjectFactory.create());
     }

@@ -16,8 +16,9 @@ public class SimpleSensor implements Sensor {
     @Override
     public void scan() {
         log.debug("Sensor::scan");
-        subject.getContainer().change(SimpleResource.TYPE, -SCAN_COST);
-        subject.updateVision();
+        if (subject.getContainer().change(SimpleResource.TYPE, -SCAN_COST) > 0) {
+            subject.updateVision();
+        }
     }
 
 }

@@ -1,5 +1,10 @@
 package com.thm.aiarena.ai;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Random;
 
 public class Layer {
@@ -33,4 +38,34 @@ public class Layer {
         return output;
     }
 
+    public void save(DataOutputStream outputStream) throws IOException {
+
+            int rows = weights.length;
+            int cols = weights[0].length;
+
+            outputStream.writeInt(rows);
+            outputStream.writeInt(cols);
+
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    outputStream.writeDouble(weights[i][j]);
+                }
+            }
+
+    }
+
+    public void load(DataInputStream inputStream) throws IOException {
+
+        int rows = inputStream.readInt();
+        int cols = inputStream.readInt();
+
+        weights = new double[rows][cols];
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                weights[i][j] = inputStream.readDouble();
+            }
+        }
+
+    }
 }
