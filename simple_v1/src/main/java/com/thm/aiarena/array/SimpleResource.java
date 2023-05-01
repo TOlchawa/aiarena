@@ -6,9 +6,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Builder
+@Getter
+@Setter
 public class SimpleResource implements AResource {
 
-    private long amount;
+    public static int TYPE = 0;
+
+    private int amount;
 
     @Override
     public int getType() {
@@ -16,7 +20,7 @@ public class SimpleResource implements AResource {
     }
 
     @Override
-    public long getAmount() {
+    public int getAmount() {
         return 0;
     }
 

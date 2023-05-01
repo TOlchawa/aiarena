@@ -89,8 +89,11 @@ public class FlatArrayArena implements AArena {
                 }
             )
         );
-        addAObject(100, 100, aObjectFactory.create());
-        addAObject(width-100, height-100, aObjectFactory.create());
+        addAObject(100, 100, aObjectFactory.create(1));
+        addAObject(100, 101, aObjectFactory.create(2));
+        addAObject(101, 101, aObjectFactory.create(1));
+//        addAObject(width-100, height-100, aObjectFactory.create());
+//        addAObject(width-101, height-100, aObjectFactory.create());
     }
 
     private void addAObject(int x, int y, NeuralNetworkSimpleObject aObject) {
@@ -98,6 +101,18 @@ public class FlatArrayArena implements AArena {
         aObject.setLocation(this.getLocation(x, y, 0));
         allObjects.add(aObject);
         cells[x][y].getLocation().getAObjects().add(aObject);
+    }
+
+    @Override
+    public void moveAObject(AObject aObject, ALocation targetLocation) {
+        SimpleObject simpleObject = (SimpleObject)aObject;
+        SimpleLocation fromLocation = (SimpleLocation)simpleObject.getLocation();
+        SimpleLocation toLocation = (SimpleLocation)targetLocation;
+        if (!((SimpleLocation) targetLocation).getAObjects().isEmpty()) {
+            throw new IllegalArgumentException("location cannot contains two object in this implementation!");
+        }
+        fromLocation.getAObjects().remove(simpleObject);
+        toLocation.getAObjects().add(simpleObject);
     }
 
     @Data

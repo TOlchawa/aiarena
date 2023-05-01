@@ -23,4 +23,6 @@ public interface AArena {
     // Returns all AObjects
     List<AObject> getAllAObjects();
 
+    // move specified aObject to specified targetLocation
+    void moveAObject(AObject aObject, ALocation targetLocation);
 }

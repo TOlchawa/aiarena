@@ -30,7 +30,7 @@ public class SimpleObjectsProvider {
         }
         int max = aObjectsToProvide.size();
         int nextIdx = randomObjectsIndexProvider.nextInt(max);
-        log.info("randomObjectsIndexProvider: {} ", nextIdx);
+        log.debug("randomObjectsIndexProvider: {} ", nextIdx);
         AObject result = aObjectsToProvide.remove(nextIdx);
         if (aObjectsToProvide.isEmpty()) {
             aObjectsToProvide = null;

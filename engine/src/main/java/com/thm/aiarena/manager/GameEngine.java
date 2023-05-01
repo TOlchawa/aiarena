@@ -20,17 +20,9 @@ public class GameEngine {
 
     @Scheduled(fixedDelay = 1000, timeUnit = TimeUnit.MILLISECONDS)
     void process() {
-//        log.info("process: {}", arena);
-//        arena.getAllAObjects().stream().forEach(
-//            aObj -> {
-//                log.info("aObj: {}", aObj);
-//            }
-//        );
         AObject aObj = aObjectsProvider.provideAObject();
-        log.info("aObj: {}", aObj);
-
+        log.debug("aObj: {}", aObj);
         aObj.operate();
-
     }
 
 }
