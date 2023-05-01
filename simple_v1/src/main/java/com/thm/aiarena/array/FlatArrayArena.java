@@ -1,6 +1,7 @@
 package com.thm.aiarena.array;
 
-import com.thm.aiarena.*;
+import com.thm.aiarena.ai.NeuralNetworkSimpleObject;
+import com.thm.aiarena.ai.NeuralNetworkSimpleObjectFactory;
 import com.thm.aiarena.model.AArena;
 import com.thm.aiarena.model.ALocation;
 import com.thm.aiarena.model.AObject;
@@ -20,6 +21,8 @@ import java.util.stream.IntStream;
 @AllArgsConstructor
 @Slf4j
 public class FlatArrayArena implements AArena {
+
+    public static final int SIMPLE_RESOURCE_AMOUNT = 1000000;
 
     private final int width;
     private final int height;
@@ -49,6 +52,9 @@ public class FlatArrayArena implements AArena {
 
     @Override
     public ALocation getLocation(int x, int y, int z) {
+        if (x < 0 || y < 0 || x >= width || y >= height) {
+            return null;
+        }
         return cells[x][y].getLocation();
     }
 
@@ -78,7 +84,7 @@ public class FlatArrayArena implements AArena {
                             .x(x)
                             .y(y)
                             .aObjects(new ArrayList<>(1))
-                            .aResources(new ArrayList<>(1))
+                            .aResources(List.of(SimpleResource.builder().amount(SIMPLE_RESOURCE_AMOUNT).build()))
                             .build()).build();
                 }
             )
@@ -88,8 +94,8 @@ public class FlatArrayArena implements AArena {
     }
 
     private void addAObject(int x, int y, NeuralNetworkSimpleObject aObject) {
-        aObject.withArena(this);
-        aObject.withLocation(this.getLocation(x, y, 0));
+        aObject.setArena(this);
+        aObject.setLocation(this.getLocation(x, y, 0));
         allObjects.add(aObject);
         cells[x][y].getLocation().getAObjects().add(aObject);
     }

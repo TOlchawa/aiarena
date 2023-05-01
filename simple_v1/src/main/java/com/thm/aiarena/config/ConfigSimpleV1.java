@@ -1,7 +1,7 @@
 package com.thm.aiarena.config;
 
 import com.thm.aiarena.array.FlatArrayArena;
-import com.thm.aiarena.array.NeuralNetworkSimpleObjectFactory;
+import com.thm.aiarena.ai.NeuralNetworkSimpleObjectFactory;
 import com.thm.aiarena.model.AArena;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

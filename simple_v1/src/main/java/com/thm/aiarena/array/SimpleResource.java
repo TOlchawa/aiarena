@@ -5,8 +5,19 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
 @Builder
 public class SimpleResource implements AResource {
+
+    private long amount;
+
+    @Override
+    public int getType() {
+        return 0;
+    }
+
+    @Override
+    public long getAmount() {
+        return 0;
+    }
+
 }
