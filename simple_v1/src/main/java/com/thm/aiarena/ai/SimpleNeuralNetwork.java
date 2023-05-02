@@ -17,4 +17,8 @@ public class SimpleNeuralNetwork {
     public void save(String filename) {
         ai.save(filename);
     }
+
+    public void load(String filename) {
+        ai.load(filename);
+    }
 }

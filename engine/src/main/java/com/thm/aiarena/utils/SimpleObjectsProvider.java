@@ -51,6 +51,7 @@ public class SimpleObjectsProvider {
             });
 
             ((NeuralNetworkSimpleObject)maxObj[0]).getAi().save("nn.bin");
+            ((NeuralNetworkSimpleObject)maxObj[0]).getAi().load("nn.bin");
         }
         return result;
     }

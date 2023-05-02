@@ -90,8 +90,8 @@ public class FlatArrayArena implements AArena {
             )
         );
 
-        IntStream.range(400, 500).forEach( x -> {
-            IntStream.range(400, 500).forEach( y-> {
+        IntStream.range(400, 450).forEach( x -> {
+            IntStream.range(400, 450).forEach( y-> {
                 addAObject(x, y, aObjectFactory.create((x+y) % 5));
             });
         });

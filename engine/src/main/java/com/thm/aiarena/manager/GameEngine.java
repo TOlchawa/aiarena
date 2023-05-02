@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 @Service
 @AllArgsConstructor
@@ -21,11 +22,13 @@ public class GameEngine {
     private final AArena arena;
     private final SimpleObjectsProvider aObjectsProvider;
 
-    @Scheduled(fixedDelay = 10, timeUnit = TimeUnit.MILLISECONDS)
+    @Scheduled(fixedDelay = 1000, timeUnit = TimeUnit.MILLISECONDS )
     void process() {
-        AObject aObj = aObjectsProvider.provideAObject();
-        log.debug("aObj: {}", aObj);
-        aObj.operate();
+        IntStream.range(0, 1000).forEach( i -> {
+            AObject aObj = aObjectsProvider.provideAObject();
+            log.debug("aObj: {}", aObj);
+            aObj.operate();
+        });
     }
 
     @Scheduled(fixedDelay = 10000, timeUnit = TimeUnit.MILLISECONDS)

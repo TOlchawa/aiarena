@@ -8,12 +8,18 @@ import java.nio.file.Path;
 import java.util.Random;
 
 public class Layer {
-    private final int cInput;
-    private final int cOutput;
-    private final Random rnd;
+    private int cInput;
+    private int cOutput;
+    private Random rnd;
+
 
     double[][] weights;
 
+    public Layer() {
+        cInput = 0;
+        cOutput = 0;
+        rnd = new Random();
+    }
     public Layer(int cInput, int cOutput, Random rnd) {
         this.rnd = rnd;
         this.cInput = cInput;
@@ -40,14 +46,11 @@ public class Layer {
 
     public void save(DataOutputStream outputStream) throws IOException {
 
-            int rows = weights.length;
-            int cols = weights[0].length;
+            outputStream.writeInt(this.cInput);
+            outputStream.writeInt(this.cOutput);
 
-            outputStream.writeInt(rows);
-            outputStream.writeInt(cols);
-
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
+            for (int i = 0; i < this.cOutput; i++) {
+                for (int j = 0; j < this.cInput; j++) {
                     outputStream.writeDouble(weights[i][j]);
                 }
             }
@@ -56,13 +59,13 @@ public class Layer {
 
     public void load(DataInputStream inputStream) throws IOException {
 
-        int rows = inputStream.readInt();
-        int cols = inputStream.readInt();
+        this.cInput = inputStream.readInt();
+        this.cOutput = inputStream.readInt();
 
-        weights = new double[rows][cols];
+        weights = new double[cOutput][cInput];
 
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
+        for (int i = 0; i < cOutput; i++) {
+            for (int j = 0; j < cInput; j++) {
                 weights[i][j] = inputStream.readDouble();
             }
         }

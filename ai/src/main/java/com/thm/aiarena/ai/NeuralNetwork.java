@@ -80,6 +80,7 @@ public class NeuralNetwork {
             int layersCount = inputStream.readInt();
             layers = new Layer[layersCount];
             for (int i=0; i<layersCount; i++) {
+                layers[i] = new Layer();
                 layers[i].load(inputStream);
             }
         } catch (IOException e) {
