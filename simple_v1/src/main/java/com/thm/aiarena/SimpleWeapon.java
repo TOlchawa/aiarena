@@ -6,14 +6,19 @@ import com.thm.aiarena.model.ALocation;
 import com.thm.aiarena.model.AObject;
 import com.thm.aiarena.model.aobject.Weapon;
 import lombok.AllArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @AllArgsConstructor
+@ToString
 public class SimpleWeapon implements Weapon {
 
     public static int ATTACK_COST = 500;
+
+    @ToString.Exclude
     private SimpleObject subject;
+
     @Override
     public void attack(ALocation location, AObject aObject) {
         if (subject.getContainer().change(SimpleResource.TYPE, -ATTACK_COST) > 0) {

@@ -4,12 +4,19 @@ import com.thm.aiarena.ai.util.Utils;
 import com.thm.aiarena.array.SimpleLocation;
 import com.thm.aiarena.array.SimpleObject;
 import com.thm.aiarena.array.SimpleResource;
+import com.thm.aiarena.model.AArena;
 import com.thm.aiarena.model.AObject;
 import com.thm.aiarena.model.AResource;
+import com.thm.aiarena.model.aobject.Memory;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Getter
@@ -17,6 +24,23 @@ import lombok.extern.slf4j.Slf4j;
 @ToString(callSuper = true)
 public class NeuralNetworkSimpleObject extends SimpleObject {
 
+    public static final int UP    = 0b00001000;
+    public static final int DOWN  = 0b00000010;
+    public static final int RIGHT = 0b00000100;
+    public static final int LEFT  = 0b00000001;
+
+    public static final int SCAN     = 0b0000000000000000;
+    public static final int MOVE     = 0b0000000000000001;
+    public static final int GAIN     = 0b0000000000000010;
+    public static final int ATTACK   = 0b0000000000000100;
+    public static final int TRANSMIT = 0b0000000000001000;
+    public static final int BIRTH    = 0b0000000010000000;
+
+    public static final int MEMORY   = 0b1111000000000000;
+    public static final int ACTION   = 0b0000000010001111;
+    private static final int BIRTH_COST = 50000;
+
+    private Random random;
     private SimpleNeuralNetwork ai;
 
     public NeuralNetworkSimpleObject() {
@@ -27,27 +51,65 @@ public class NeuralNetworkSimpleObject extends SimpleObject {
     public void operate() {
         log.debug("operate {}", this);
         SimpleLocation location = (SimpleLocation)getLocation();
+
+        AResource resource = location.getAResources().get(0);
+        int input = prepareInput();
+        int order = ai.think(input);
+
+        switch (order & ACTION) {
+            case SCAN -> scan();
+            case MOVE -> move(order, location);
+            case GAIN -> gain(resource);
+            case ATTACK -> attack(order, location);
+            case TRANSMIT -> transmit();
+            case BIRTH -> newLife();
+            default -> confused();
+        }
+
+        getMemory().remember(order & MEMORY >> 12 );
+
+    }
+
+    private void newLife() {
+        if (getContainer().inventory(SimpleResource.TYPE) > BIRTH_COST) {
+            SimpleLocation freeLocation = calculateFreeLocation();
+            if (freeLocation != null) {
+                getContainer().change(SimpleResource.TYPE, BIRTH_COST);
+                birth(freeLocation);
+            }
+        }
+    }
+
+    private void birth(SimpleLocation freeLocation) {
+        getCreator().newChild(this).getLocomotion().moveTo(freeLocation);
+    }
+
+    private SimpleLocation calculateFreeLocation() {
+        SimpleLocation location = (SimpleLocation)getLocation();
         int x = location.getX();
         int y = location.getY();
-        AResource resource = location.getAResources().get(0);
+        SimpleLocation freeLocation = findFreeLocation(getArena(), x, y);
+        return freeLocation;
+    }
 
-        int input = prepareInput();
-
-//        println(input);
-//        System.out.print(" --> ");
-
-        int operation = ai.think(input);
-
-//        println(operation);
-//        System.out.println();
-
-        switch (operation & 0b00001111) {
-            case 0b0000 -> scan();
-            case 0b0001 -> move(operation, location);
-            case 0b0010 -> gain(resource);
-            case 0b0100 -> attack(operation, location);
-            case 0b1000 -> ping();
-            default -> confused();
+    SimpleLocation findFreeLocation(AArena arena, int x, int y) {
+        List<SimpleLocation> allFreeLocations = new ArrayList<>(9);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                if (dx != 0 || dy != 0) {
+                    SimpleLocation loc = (SimpleLocation) arena.getLocation(x + dx, y + dy, 0);
+                    if (loc.getAObjects().isEmpty()) {
+                        allFreeLocations.add(loc);
+                    }
+                }
+            }
+        }
+        if (allFreeLocations.isEmpty()) {
+            return null;
+        } else {
+            int l = allFreeLocations.size();
+            int idx = getRandom().nextInt(l);
+            return allFreeLocations.get(idx);
         }
     }
 
@@ -58,16 +120,34 @@ public class NeuralNetworkSimpleObject extends SimpleObject {
     }
 
     private int prepareInput() {
-        int input = (int) getContainer().inventory(SimpleResource.TYPE);
-        input >>= 8;
-        input <<= 4;
-        input += getFiends();
-        input <<= 4;
-        input += getEnemies();
-        return input;
+        int memory = provideMemoryValue(getMemory());                   // 0b1111000000000000
+        int inventory = getContainer().inventory(SimpleResource.TYPE);  // 0b0000111100000000
+        int friends = getFiends();                                      // 0b0000000011110000
+        int enemies = getEnemies();                                     // 0b0000000000001111
+        return prepareInput(memory, inventory, friends, enemies);
     }
 
-    private void ping() {
+    private int provideMemoryValue(Memory memoryProvider) {
+        int memory = 0;
+        Object memoryObject =  memoryProvider.memory();
+        if (memoryObject != null) {
+            memory = ((AtomicInteger) memoryObject).get();
+        }
+        return memory;
+    }
+
+    int prepareInput(int memory, int inventory, int friends, int enemies) {
+        int result = ( memory & 0b0000000000001111 );
+        result <<= 4;
+        result |= ( ( inventory >> 8 ) & 0b0000000000001111 );
+        result <<= 4;
+        result |= ( friends & 0b0000000000001111 );
+        result <<= 4;
+        result |= ( enemies & 0b0000000000001111 );
+        return result;
+    }
+
+    private void transmit() {
         getTransmitter().transmit();
     }
 
@@ -89,7 +169,7 @@ public class NeuralNetworkSimpleObject extends SimpleObject {
         if (targetLocation == null || !targetLocation.getAObjects().isEmpty()) {
             confused();
         } else {
-            getMotorics().move(targetLocation);
+            getLocomotion().moveTo(targetLocation);
         }
     }
 
@@ -114,14 +194,14 @@ public class NeuralNetworkSimpleObject extends SimpleObject {
 
     private SimpleLocation calculateTargetLocation(int operation, SimpleLocation location) {
         return (SimpleLocation) switch (operation) {
-            case 0b1000 -> getArena().getLocation(location.getX(), location.getY() + 1, 0); // up
-            case 0b0010 -> getArena().getLocation(location.getX(), location.getY() - 1, 0); // down
-            case 0b0100 -> getArena().getLocation(location.getX() + 1, location.getY(), 0); // right
-            case 0b0001 -> getArena().getLocation(location.getX() - 1, location.getY(), 0); // left
-            case 0b1000 | 0b0001 -> getArena().getLocation(location.getX() - 1, location.getY() + 1, 0); // up + left
-            case 0b0010 | 0b0001 -> getArena().getLocation(location.getX() - 1, location.getY() - 1, 0); // down + left
-            case 0b1000 | 0b0100 -> getArena().getLocation(location.getX() + 1, location.getY() + 1, 0); // up + right
-            case 0b0010 | 0b0100 -> getArena().getLocation(location.getX() + 1, location.getY() - 1, 0); // down + right
+            case UP -> getArena().getLocation(location.getX(), location.getY() + 1, 0); // up
+            case DOWN -> getArena().getLocation(location.getX(), location.getY() - 1, 0); // down
+            case RIGHT -> getArena().getLocation(location.getX() + 1, location.getY(), 0); // right
+            case LEFT -> getArena().getLocation(location.getX() - 1, location.getY(), 0); // left
+            case UP | LEFT -> getArena().getLocation(location.getX() - 1, location.getY() + 1, 0); // up + left
+            case DOWN | LEFT -> getArena().getLocation(location.getX() - 1, location.getY() - 1, 0); // down + left
+            case UP | RIGHT -> getArena().getLocation(location.getX() + 1, location.getY() + 1, 0); // up + right
+            case DOWN | RIGHT -> getArena().getLocation(location.getX() + 1, location.getY() - 1, 0); // down + right
             default -> null;
         };
     }

@@ -5,15 +5,18 @@ import com.thm.aiarena.array.SimpleResource;
 import com.thm.aiarena.model.AResource;
 import com.thm.aiarena.model.aobject.Manipulator;
 import lombok.AllArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @AllArgsConstructor
+@ToString
 public class SimpleManipulator implements Manipulator {
 
     public static int GAIN_COST = 200;
     private static int MAX_PORTION_OF_RESOURCE = 1000;
 
+    @ToString.Exclude
     private SimpleObject subject;
 
     @Override

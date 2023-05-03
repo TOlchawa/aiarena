@@ -1,5 +1,6 @@
 package com.thm.aiarena.array;
 
+import com.thm.aiarena.SimpleMemory;
 import com.thm.aiarena.model.AArena;
 import com.thm.aiarena.model.ALocation;
 import com.thm.aiarena.model.AObject;
@@ -24,11 +25,13 @@ public class SimpleObject implements AObject {
     private ALocation location;
 
     private Sensor sensor;
-    private Motorics motorics;
+    private Locomotion locomotion;
     private Weapon weapon;
     private Container container;
     private Manipulator manipulator;
     private Transmitter transmitter;
+    private Creator creator;
+    private Memory memory;
     private int species;
     private int fiends;
     private int enemies;
@@ -43,13 +46,13 @@ public class SimpleObject implements AObject {
      *   found:    com.thm.aiarena.model.AArena,com.thm.aiarena.model.ALocation,com.thm.aiarena.model.aobject.Sensor,com.thm.aiarena.model.aobject.Motorics,com.thm.aiarena.model.aobject.Weapon,com.thm.aiarena.model.aobject.Container,com.thm.aiarena.model.aobject.Manipulator
      *   reason: actual and formal argument lists differ in length
      */
-    public SimpleObject(UUID id, int species, AArena arena, ALocation location, Sensor sensor, Motorics motorics, Weapon weapon, Container container, Manipulator manipulator) {
+    public SimpleObject(UUID id, int species, AArena arena, ALocation location, Sensor sensor, Locomotion locomotion, Weapon weapon, Container container, Manipulator manipulator) {
         this.id= id;
         this.species = species;
         this.arena = arena;
         this.location = location;
         this.sensor = sensor;
-        this.motorics = motorics;
+        this.locomotion = locomotion;
         this.weapon = weapon;
         this.container = container;
         this.manipulator = manipulator;
@@ -105,15 +108,15 @@ public class SimpleObject implements AObject {
     }
 
 
-    private int markPosition(int x, int y) {
+    public int markPosition(int x, int y) {
         int resultX = switch (x) {
             case -1 -> 0b0001;
-            case 1 -> 0b0100;
+            case 1 ->  0b0100;
             default -> 0b0000;
         };
         int resultY = switch (y) {
             case -1 -> 0b0010;
-            case 1 -> 0b1000;
+            case 1 ->  0b1000;
             default -> 0b0000;
         };
         return resultX | resultY;
@@ -122,4 +125,5 @@ public class SimpleObject implements AObject {
     public int getSpecie() {
         return species;
     }
+
 }

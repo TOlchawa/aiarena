@@ -90,17 +90,18 @@ public class FlatArrayArena implements AArena {
             )
         );
 
+
         IntStream.range(400, 450).forEach( x -> {
             IntStream.range(400, 450).forEach( y-> {
                 addAObject(x, y, aObjectFactory.create((x+y) % 5));
             });
         });
+        replaceAObject(425, 425, aObjectFactory.create("nn.1.bin", 100));
+        replaceAObject(426, 425, aObjectFactory.create("nn.2.bin", 101));
+        replaceAObject(426, 426, aObjectFactory.create("nn.3.bin", 102));
+        replaceAObject(427, 426, aObjectFactory.create("nn.4.bin", 103));
+        replaceAObject(427, 427, aObjectFactory.create("nn.5.bin", 104));
 
-//        addAObject(100, 100, aObjectFactory.create(1));
-//        addAObject(100, 101, aObjectFactory.create(2));
-//        addAObject(101, 101, aObjectFactory.create(1));
-//        addAObject(width-100, height-100, aObjectFactory.create());
-//        addAObject(width-101, height-100, aObjectFactory.create());
     }
 
     private void addAObject(int x, int y, NeuralNetworkSimpleObject aObject) {
@@ -108,6 +109,16 @@ public class FlatArrayArena implements AArena {
         aObject.setLocation(this.getLocation(x, y, 0));
         allObjects.add(aObject);
         cells[x][y].getLocation().getAObjects().add(aObject);
+    }
+
+    private void replaceAObject(int x, int y, NeuralNetworkSimpleObject aObject) {
+        SimpleObject simpleObject = (SimpleObject) cells[x][y].getLocation().getAObjects().get(0);
+        cells[x][y].getLocation().getAObjects().remove(simpleObject);
+        allObjects.remove(simpleObject);
+        simpleObject.setArena(null);
+        simpleObject.setLocation(null);
+
+        addAObject(x,y,aObject);
     }
 
     @Override
