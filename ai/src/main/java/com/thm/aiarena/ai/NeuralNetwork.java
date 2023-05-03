@@ -59,6 +59,21 @@ public class NeuralNetwork {
         return result;
     }
 
+    public NeuralNetwork clone() {
+        NeuralNetwork result = new NeuralNetwork(new Random());
+        Layer[] copyLayers = new Layer[layers.length];
+        for (int i=0; i<layers.length; i++) {
+            copyLayers[i] = new Layer(layers[i]);
+            copyLayers[i].randomize(0.001d);
+        }
+        result.setLayers(copyLayers);
+        return result;
+    }
+
+    private void setLayers(Layer[] layers) {
+        this.layers = layers;
+    }
+
     public void save(String fileName) {
         Path filePath = Path.of(fileName);
 

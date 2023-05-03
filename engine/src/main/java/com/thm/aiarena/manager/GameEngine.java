@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
 
 @Service
@@ -40,6 +41,7 @@ public class GameEngine {
         AtomicInteger totalInventory = new AtomicInteger(0);
         AtomicInteger maxInventory = new AtomicInteger(0);
         Map<Integer,AtomicInteger> spicesStats = new HashMap<>();
+        Map<Integer,AtomicLong> spicesValueStats = new HashMap<>();
         arena.getAllAObjects().forEach(obj -> {
             Container container = obj.getContainer();
             int spiece = obj.getTransmitter().response();
@@ -49,12 +51,19 @@ public class GameEngine {
             minInventory.set(Math.min(minInventory.get(), inventory));
             maxInventory.set(Math.max(maxInventory.get(), inventory));
             if (!spicesStats.containsKey(spiece)) {
-                spicesStats.put(spiece, new AtomicInteger());
+                spicesStats.put(spiece, new AtomicInteger(0));
+                spicesValueStats.put(spiece, new AtomicLong(0));
             }
             spicesStats.get(spiece).incrementAndGet();
+            spicesValueStats.get(spiece).addAndGet(inventory);
         });
-        log.info("Total: {} ; Average Inventory: {} ; Min: {}; Max: {}; Spices: {}",
-                totalCount.get(), totalInventory.get() / totalCount.intValue(), minInventory.get(), maxInventory.get(), spicesStats);
+        log.info("Total: {} ; Average Inventory: {} ; Min: {}; Max: {}",
+                totalCount.get(), totalInventory.get() / totalCount.intValue(), minInventory.get(), maxInventory.get());
+        spicesStats.keySet().forEach(
+            k -> {
+                log.info("spices: {}; count: {}; avgValue: {}", k, spicesStats.get(k), spicesValueStats.get(k).get() / spicesStats.get(k).get());
+            }
+        );
     }
 
 }

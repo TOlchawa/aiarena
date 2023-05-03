@@ -43,8 +43,6 @@ public class NeuralNetworkSimpleObjectFactory implements Creator {
 
     @Override
     public AObject newChild(AObject parentObject) {
-
-
         NeuralNetworkSimpleObject parent = (NeuralNetworkSimpleObject) parentObject;
         NeuralNetworkSimpleObject child = create(parent.getTransmitter().response());
         SimpleContainer simpleContainer = (SimpleContainer)child.getContainer();
@@ -52,8 +50,9 @@ public class NeuralNetworkSimpleObjectFactory implements Creator {
         child.getContainer().change(SimpleResource.TYPE, -NEW_CHILD_VALUE);
         child.setArena(parent.getArena());
         child.setLocation(parent.getLocation());
+        child.setAi(parent.getAi());
 
-        log.info("NEW BORN: {} --> {}",parentObject, child);
+        log.debug("NEW BORN: {} --> {}",parentObject, child);
 
         return child;
     }

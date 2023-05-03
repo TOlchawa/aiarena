@@ -33,6 +33,26 @@ public class Layer {
         }
     }
 
+    public Layer(Layer parent) {
+        this.rnd = new Random();
+        this.cInput = parent.cInput;
+        this.cOutput = parent.cOutput;
+        this.weights = new double[this.cOutput][this.cInput];
+        for (int i = 0; i < this.cOutput; i++) {
+            for (int j = 0; j < this.cInput; j++) {
+                this.weights[i][j] = parent.weights[i][j];
+            }
+        }
+    }
+
+    public void randomize(double factor) {
+        for (int i = 0; i < this.cOutput; i++) {
+            for (int j = 0; j < this.cInput; j++) {
+                this.weights[i][j] += ( this.weights[i][j] * factor * (rnd.nextDouble(2) - 1));
+            }
+        }
+    }
+
     public double[] forward(double[] input) {
         double[] output = new double[cOutput];
         for (int i = 0; i < weights.length; i++) {
