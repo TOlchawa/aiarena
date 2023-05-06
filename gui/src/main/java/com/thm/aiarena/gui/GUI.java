@@ -1,5 +1,6 @@
 package com.thm.aiarena.gui;
 
+import com.thm.aiarena.gui.client.DataProvider;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
@@ -9,8 +10,17 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class GUI extends Application {
+
+
+    DataProvider dataProvider;
+
+    public GUI() throws IOException {
+        dataProvider = new DataProvider(this);
+    }
+
+
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) throws IOException, ClassNotFoundException {
 
 
         double maxWidth = 0;
@@ -41,10 +51,8 @@ public class GUI extends Application {
 
         stage.show();
 
+        dataProvider.startListener();
 
     }
 
-    public static void main(String[] args) {
-        launch();
-    }
 }

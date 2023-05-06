@@ -6,7 +6,7 @@
 
     <groupId>com.thm.aiarena</groupId>
     <artifactId>gui</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1.0004</version>
     <name>gui</name>
 
     <properties>
@@ -15,6 +15,16 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.thm.aiarena</groupId>
+            <artifactId>model</artifactId>
+            <version>1.1.0004</version>
+        </dependency>
+        <dependency>
+            <groupId>com.thm.aiarena</groupId>
+            <artifactId>communication</artifactId>
+            <version>1.1.0004</version>
+        </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -41,6 +51,11 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.thm.aiarena</groupId>
+            <artifactId>model</artifactId>
+            <version>1.1.0004</version>
         </dependency>
     </dependencies>
 
