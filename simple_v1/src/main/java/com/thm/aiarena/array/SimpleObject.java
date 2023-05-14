@@ -18,6 +18,7 @@ import java.util.stream.IntStream;
 public class SimpleObject implements AObject {
 
     private UUID id = UUID.randomUUID();
+    private UUID parentId = null;
 
     @ToString.Exclude
     private AArena arena;
@@ -65,6 +66,11 @@ public class SimpleObject implements AObject {
     @Override
     public void operate() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isAlive() {
+        return getContainer() != null && getContainer().inventory(SimpleResource.TYPE) > 0;
     }
 
     public void updateVision() {

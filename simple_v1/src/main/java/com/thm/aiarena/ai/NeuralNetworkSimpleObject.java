@@ -5,6 +5,7 @@ import com.thm.aiarena.array.SimpleLocation;
 import com.thm.aiarena.array.SimpleObject;
 import com.thm.aiarena.array.SimpleResource;
 import com.thm.aiarena.model.AArena;
+import com.thm.aiarena.model.AEvent;
 import com.thm.aiarena.model.AObject;
 import com.thm.aiarena.model.AResource;
 import com.thm.aiarena.model.aobject.Memory;
@@ -17,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.thm.aiarena.SimpleConst.*;
 
 @Slf4j
 @Getter
@@ -38,7 +41,7 @@ public class NeuralNetworkSimpleObject extends SimpleObject {
 
     public static final int MEMORY   = 0b1111000000000000;
     public static final int ACTION   = 0b0000000010001111;
-    private static final int BIRTH_COST = 50000;
+
 
     private Random random;
     private SimpleNeuralNetwork ai;
@@ -62,26 +65,62 @@ public class NeuralNetworkSimpleObject extends SimpleObject {
             case GAIN -> gain(resource);
             case ATTACK -> attack(order, location);
             case TRANSMIT -> transmit();
-            case BIRTH -> newLife();
+            case BIRTH -> birth();
             default -> confused();
         }
 
         getMemory().remember(order & MEMORY >> 12 );
 
+        if (!alive()) {
+            die();
+        } else {
+            live();
+        }
+
     }
 
-    private void newLife() {
-        if (getContainer().inventory(SimpleResource.TYPE) > BIRTH_COST) {
+    private void live() {
+        getContainer().change(SimpleResource.TYPE, -LIVE_COST);
+    }
+
+    private void die() {
+        log("D");
+        getArena().removeAObject(this);
+        getArena().getAllAObjects().remove(this);
+        setAi(null);
+        setLocation(null);
+        setCreator(null);
+        setTransmitter(null);
+        setContainer(null);
+        setManipulator(null);
+        setMemory(null);
+        setSensor(null);
+        setWeapon(null);
+        setArena(null);
+        setLocomotion(null);
+    }
+
+    private boolean alive() {
+        return getContainer().inventory(SimpleResource.TYPE) > 0;
+    }
+
+    private void birth() {
+        if (getContainer().inventory(SimpleResource.TYPE) > ((2 * NEW_CHILD_VALUE) + BIRTH_COST)) {
             SimpleLocation freeLocation = calculateFreeLocation();
             if (freeLocation != null) {
-                getContainer().change(SimpleResource.TYPE, BIRTH_COST);
+                getContainer().change(SimpleResource.TYPE, -BIRTH_COST);
                 birth(freeLocation);
             }
         }
     }
 
     private void birth(SimpleLocation freeLocation) {
-        getCreator().newChild(this).getLocomotion().moveTo(freeLocation);
+        log("B");
+        NeuralNetworkSimpleObject aObject = (NeuralNetworkSimpleObject) getCreator().newChild(this);
+        aObject.getLocomotion().moveTo(freeLocation);
+        aObject.getArena().getAllAObjects().add(aObject);
+        log.debug("new life ; type: {}", aObject.getTransmitter().response());
+        getArena().process(new AEvent(AEvent.NEW_BORN, aObject, freeLocation));
     }
 
     private SimpleLocation calculateFreeLocation() {
@@ -148,6 +187,7 @@ public class NeuralNetworkSimpleObject extends SimpleObject {
     }
 
     private void transmit() {
+//        log("T");
         getTransmitter().transmit();
     }
 
@@ -156,10 +196,16 @@ public class NeuralNetworkSimpleObject extends SimpleObject {
     }
 
     private void scan() {
+//        log("S");
         getSensor().scan();
     }
 
+    private void log(String action) {
+        System.out.print(action);
+    }
+
     private void move(int operation, SimpleLocation location) {
+        log("M");
         int moveDirection = ( operation >> 4 ) & 0b1111;
         SimpleLocation targetLocation = calculateTargetLocation(moveDirection, location);
         move(targetLocation);
@@ -184,11 +230,13 @@ public class NeuralNetworkSimpleObject extends SimpleObject {
             confused();
         } else {
             AObject target = targetLocation.getAObjects().get(0);
+            log("A");
             getWeapon().attack(targetLocation, target);
         }
     }
 
     private void gain(AResource resource) {
+//        log("G");
         getManipulator().gain(resource);
     }
 

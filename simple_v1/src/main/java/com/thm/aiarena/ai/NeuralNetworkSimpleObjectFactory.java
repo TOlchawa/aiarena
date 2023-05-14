@@ -8,9 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Random;
 
+import static com.thm.aiarena.SimpleConst.NEW_CHILD_VALUE;
+
 @Slf4j
 public class NeuralNetworkSimpleObjectFactory implements Creator {
-    private static final int NEW_CHILD_VALUE = 10000;
+
 
     public NeuralNetworkSimpleObject create(int species) {
         NeuralNetworkSimpleObject result = createNeuralSimpleObject(species);
@@ -51,6 +53,8 @@ public class NeuralNetworkSimpleObjectFactory implements Creator {
         child.setArena(parent.getArena());
         child.setLocation(parent.getLocation());
         child.setAi(parent.getAi());
+        child.setTransmitter(parent.getTransmitter());
+        child.setParentId(parent.getId());
 
         log.debug("NEW BORN: {} --> {}",parentObject, child);
 

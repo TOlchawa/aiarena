@@ -2,10 +2,7 @@ package com.thm.aiarena.array;
 
 import com.thm.aiarena.ai.NeuralNetworkSimpleObject;
 import com.thm.aiarena.ai.NeuralNetworkSimpleObjectFactory;
-import com.thm.aiarena.model.AArena;
-import com.thm.aiarena.model.ALocation;
-import com.thm.aiarena.model.AObject;
-import com.thm.aiarena.model.AResource;
+import com.thm.aiarena.model.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,6 +11,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
+import static com.thm.aiarena.SimpleConst.SIMPLE_RESOURCE_AMOUNT;
+
 @Getter
 @Setter
 @ToString
@@ -21,8 +20,6 @@ import java.util.stream.IntStream;
 @AllArgsConstructor
 @Slf4j
 public class FlatArrayArena implements AArena {
-
-    public static final int SIMPLE_RESOURCE_AMOUNT = 1000000;
 
     private final int width;
     private final int height;
@@ -90,17 +87,18 @@ public class FlatArrayArena implements AArena {
             )
         );
 
+//        IntStream.range(1, 30).forEach( x -> {
+//            IntStream.range(1, 30).forEach( y-> {
+//                addAObject(x*10, y*10, aObjectFactory.create((x+y) % 5));
+//            });
+//        });
 
-        IntStream.range(400, 450).forEach( x -> {
-            IntStream.range(400, 450).forEach( y-> {
-                addAObject(x, y, aObjectFactory.create((x+y) % 5));
-            });
-        });
-        replaceAObject(425, 425, aObjectFactory.create("nn.1.bin", 100));
-        replaceAObject(426, 425, aObjectFactory.create("nn.2.bin", 101));
-        replaceAObject(426, 426, aObjectFactory.create("nn.3.bin", 102));
-        replaceAObject(427, 426, aObjectFactory.create("nn.4.bin", 103));
-        replaceAObject(427, 427, aObjectFactory.create("nn.5.bin", 104));
+        replaceAObject(325, 425, aObjectFactory.create("nn.1.bin", 0));
+        replaceAObject(426, 325, aObjectFactory.create("nn.2.bin", 1));
+        replaceAObject(326, 326, aObjectFactory.create("nn.3.bin", 2));
+        replaceAObject(427, 426, aObjectFactory.create("nn.4.bin", 3));
+        replaceAObject(527, 527, aObjectFactory.create("nn.5.bin", 4));
+        replaceAObject(227, 227, aObjectFactory.create("nn.6.bin", 5));
 
     }
 
@@ -112,11 +110,15 @@ public class FlatArrayArena implements AArena {
     }
 
     private void replaceAObject(int x, int y, NeuralNetworkSimpleObject aObject) {
-        SimpleObject simpleObject = (SimpleObject) cells[x][y].getLocation().getAObjects().get(0);
-        cells[x][y].getLocation().getAObjects().remove(simpleObject);
-        allObjects.remove(simpleObject);
-        simpleObject.setArena(null);
-        simpleObject.setLocation(null);
+        List<AObject> aObjectList = cells[x][y].getLocation().getAObjects();
+        if (aObjectList != null && !aObjectList.isEmpty()) {
+            AObject originalObject = aObjectList.get(0);
+            SimpleObject simpleObject = (SimpleObject) originalObject;
+            aObjectList.remove(simpleObject);
+            allObjects.remove(simpleObject);
+            simpleObject.setArena(null);
+            simpleObject.setLocation(null);
+        }
 
         addAObject(x,y,aObject);
     }
@@ -131,6 +133,26 @@ public class FlatArrayArena implements AArena {
         }
         fromLocation.getAObjects().remove(simpleObject);
         toLocation.getAObjects().add(simpleObject);
+    }
+
+    @Override
+    public void removeAObject(AObject aObject) {
+        SimpleLocation simpleLocation = (SimpleLocation)aObject.getLocation();
+        int x = simpleLocation.getX();
+        int y = simpleLocation.getY();
+        cells[x][y].getLocation().getAObjects().remove(aObject);
+    }
+
+    @Override
+    public void process(AEvent event) {
+        switch (event.getType()) {
+            case AEvent.NEW_BORN -> {
+                SimpleLocation location = (SimpleLocation)event.getLocation();
+                SimpleObject source = (SimpleObject)event.getSource();
+                cells[location.getX()][location.getY()].getLocation().getAObjects().add(source);
+            }
+            default -> log.info("Unknown event {}", event);
+        }
     }
 
     @Data

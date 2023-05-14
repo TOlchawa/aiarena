@@ -8,13 +8,14 @@ import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.thm.aiarena.SimpleConst.GAIN_COST;
+import static com.thm.aiarena.SimpleConst.MAX_PORTION_OF_RESOURCE;
+
 @Slf4j
 @AllArgsConstructor
 @ToString
 public class SimpleManipulator implements Manipulator {
 
-    public static int GAIN_COST = 200;
-    private static int MAX_PORTION_OF_RESOURCE = 1000;
 
     @ToString.Exclude
     private SimpleObject subject;
@@ -23,16 +24,17 @@ public class SimpleManipulator implements Manipulator {
     public void gain(AResource resource) {
         if (subject.getContainer().change(SimpleResource.TYPE, -GAIN_COST) > 0) {
             SimpleResource simpleResource = (SimpleResource) resource;
-            int amount = resource.getAmount();
-            int gain = subject.getContainer().max(resource) - subject.getContainer().inventory(SimpleResource.TYPE);
-
-            gain = Math.min(MAX_PORTION_OF_RESOURCE, Math.min(amount, gain));
+            int resourceAmount = resource.getAmount();
+            int maxGain = subject.getContainer().max(resource) - subject.getContainer().inventory(SimpleResource.TYPE);
+            int gain = Math.min(resourceAmount, Math.min(MAX_PORTION_OF_RESOURCE, maxGain));
             // less than MAX_PORTION_OF_RESOURCE
             // less than total amount
             // less than max capacity - current capacity
 
-            simpleResource.setAmount(amount - gain); // consume resources
+            simpleResource.setAmount(resourceAmount - gain); // consume resources
             subject.getContainer().change(resource.getType(), gain); // gain resources
+
+            log.debug("object: {} ; resource: {}", subject.getContainer().inventory(SimpleResource.TYPE), simpleResource.getAmount());
         }
     }
 }

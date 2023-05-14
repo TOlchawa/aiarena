@@ -6,14 +6,18 @@ import com.thm.aiarena.model.AArena;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static com.thm.aiarena.SimpleConst.ARENA_SIZE_HEIGHT;
+import static com.thm.aiarena.SimpleConst.ARENA_SIZE_WIDTH;
+
 @Configuration
 public class ConfigSimpleV1 {
+
 
     @Bean
     public AArena getAArena(NeuralNetworkSimpleObjectFactory aObjectFactory) {
         FlatArrayArena arena = FlatArrayArena.builder()
-                .width(1000)
-                .height(1000)
+                .width(ARENA_SIZE_WIDTH)
+                .height(ARENA_SIZE_HEIGHT)
                 .aObjectFactory(aObjectFactory)
                 .build();
         arena.init();

@@ -9,12 +9,14 @@ import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.thm.aiarena.SimpleConst.ATTACK_COST;
+
 @Slf4j
 @AllArgsConstructor
 @ToString
 public class SimpleWeapon implements Weapon {
 
-    public static int ATTACK_COST = 500;
+
 
     @ToString.Exclude
     private SimpleObject subject;
@@ -22,8 +24,9 @@ public class SimpleWeapon implements Weapon {
     @Override
     public void attack(ALocation location, AObject aObject) {
         if (subject.getContainer().change(SimpleResource.TYPE, -ATTACK_COST) > 0) {
+            int subjectResourceAmount = subject.getContainer().inventory(SimpleResource.TYPE);
             int enemyResourceAmount = aObject.getContainer().inventory(SimpleResource.TYPE);
-            int benefit = enemyResourceAmount / 2;
+            int benefit = Math.min(enemyResourceAmount, subjectResourceAmount / 2);
             log.debug("Weapon::attack - benefit: {}", benefit);
             aObject.getContainer().change(SimpleResource.TYPE, -benefit);
             subject.getContainer().change(SimpleResource.TYPE, benefit);

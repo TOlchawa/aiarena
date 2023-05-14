@@ -10,23 +10,20 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.SocketChannel;
+import java.util.concurrent.Executors;
 
 import static com.thm.aiarena.communication.DataObject.ADD_OBJECT;
 import static com.thm.aiarena.communication.DataObject.REMOVE_OBJECT;
 
 public class DataProvider implements DataListener {
-    private ObjectStreamClient objectStreamClient;
+
     private GUI gui;
 
     public DataProvider(GUI gui) throws IOException {
         this.gui = gui;
-        objectStreamClient = new ObjectStreamClient(this);
-    }
-
-    public void startListener() throws IOException, ClassNotFoundException {
-        SocketAddress remote = new InetSocketAddress(InetAddress.getLocalHost(), 43555);
-        SocketChannel channel = SocketChannel.open(remote);
-        objectStreamClient.receiveObject(channel);
+        Executors.newSingleThreadExecutor().submit( () -> {
+            new ObjectStreamClient(this);
+        });
     }
 
     @Override
@@ -39,13 +36,15 @@ public class DataProvider implements DataListener {
     }
 
     private void addObject(DataObject event) {
-
+        System.out.println("ADD " + event.x + "," + event.y);
+        gui.add(event);
     }
 
     private void removeObject(DataObject event) {
-
+        System.out.println("REM " + event.x + "," + event.y);
     }
 
     private void error() {
+        System.err.println("ERROR!");
     }
 }

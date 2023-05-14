@@ -3,11 +3,10 @@ package com.thm.aiarena.ai;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Random;
 
 public class Layer {
+    private static final double ANOMALY_FACTOR = 0.05d;
     private int cInput;
     private int cOutput;
     private Random rnd;
@@ -58,10 +57,15 @@ public class Layer {
         for (int i = 0; i < weights.length; i++) {
             output[i] = 0;
             for (int j = 0; j < input.length; j++) {
-                output[i] += input[j] * weights[i][j];
+                output[i] += input[j] * ( weights[i][j] + anomaly(weights[i][j]));
             }
         }
         return output;
+    }
+
+    private double anomaly(double weight) {
+        double factor = 2 * Math.random() * ANOMALY_FACTOR - ANOMALY_FACTOR;
+        return factor * weight;
     }
 
     public void save(DataOutputStream outputStream) throws IOException {

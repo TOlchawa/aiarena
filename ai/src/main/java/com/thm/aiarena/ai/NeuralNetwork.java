@@ -38,7 +38,7 @@ public class NeuralNetwork {
     private double[] normalize(double[] buf) {
         double[] result = new double[buf.length];
         for( int i=0; i<16; i++) {
-            result[i] = buf[i] > 0.0d ? 1.0d : 0.0d;
+            result[i] = Math.min(1.0d, Math.max( -1.0d, buf[i]));
         }
         return result;
     }

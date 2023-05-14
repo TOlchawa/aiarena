@@ -2,7 +2,7 @@ package com.thm.aiarena.model;
 
 import java.util.List;
 
-public interface AArena {
+public interface AArena extends AListener {
 
     int getWidth();
     int getHeight();
@@ -25,4 +25,6 @@ public interface AArena {
 
     // move specified aObject to specified targetLocation
     void moveAObject(AObject aObject, ALocation targetLocation);
+
+    void removeAObject(AObject aObject);
 }

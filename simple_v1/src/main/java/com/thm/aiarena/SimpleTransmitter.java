@@ -17,9 +17,6 @@ import java.util.stream.IntStream;
 @ToString
 public class SimpleTransmitter implements Transmitter {
 
-    public static int TRANSMIT_COST = 50;
-    public static int NEW_LIFE_COST = 50000;
-
     @ToString.Exclude
     private SimpleObject subject;
 

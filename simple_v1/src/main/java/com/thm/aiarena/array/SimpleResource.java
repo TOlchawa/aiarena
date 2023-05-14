@@ -21,7 +21,7 @@ public class SimpleResource implements AResource {
 
     @Override
     public int getAmount() {
-        return 0;
+        return amount;
     }
 
 }

@@ -25,12 +25,16 @@ public class GameEngine {
     private final AArena arena;
     private final SimpleObjectsProvider aObjectsProvider;
 
-    @Scheduled(fixedDelay = 1000, timeUnit = TimeUnit.MILLISECONDS )
+    @Scheduled(fixedDelay = 100, timeUnit = TimeUnit.MILLISECONDS)
     void process() {
         IntStream.range(0, 1000).forEach( i -> {
             AObject aObj = aObjectsProvider.provideAObject();
             log.debug("aObj: {}", aObj);
-            aObj.operate();
+            if (aObj != null) {
+                aObj.operate();
+            } else {
+                System.exit(1);
+            }
         });
     }
 
@@ -42,6 +46,7 @@ public class GameEngine {
         AtomicInteger maxInventory = new AtomicInteger(0);
         Map<Integer,AtomicInteger> spicesStats = new HashMap<>();
         Map<Integer,AtomicLong> spicesValueStats = new HashMap<>();
+        Map<Integer,AtomicLong> spicesMaxValueStats = new HashMap<>();
         arena.getAllAObjects().forEach(obj -> {
             Container container = obj.getContainer();
             int spiece = obj.getTransmitter().response();
@@ -53,15 +58,18 @@ public class GameEngine {
             if (!spicesStats.containsKey(spiece)) {
                 spicesStats.put(spiece, new AtomicInteger(0));
                 spicesValueStats.put(spiece, new AtomicLong(0));
+                spicesMaxValueStats.put(spiece, new AtomicLong(0));
             }
             spicesStats.get(spiece).incrementAndGet();
             spicesValueStats.get(spiece).addAndGet(inventory);
+            spicesMaxValueStats.get(spiece).set(Math.max(inventory, spicesMaxValueStats.get(spiece).get()));
         });
         log.info("Total: {} ; Average Inventory: {} ; Min: {}; Max: {}",
                 totalCount.get(), totalInventory.get() / totalCount.intValue(), minInventory.get(), maxInventory.get());
         spicesStats.keySet().forEach(
             k -> {
-                log.info("spices: {}; count: {}; avgValue: {}", k, spicesStats.get(k), spicesValueStats.get(k).get() / spicesStats.get(k).get());
+                log.info("spices: {}; count: {}; avgValue: {}; max inventory: {}",
+                        k, spicesStats.get(k), spicesValueStats.get(k).get() / spicesStats.get(k).get(), spicesMaxValueStats.get(k).get());
             }
         );
     }

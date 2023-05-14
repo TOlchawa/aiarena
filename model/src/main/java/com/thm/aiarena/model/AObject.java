@@ -14,4 +14,6 @@ public interface AObject {
     Transmitter getTransmitter();
     Memory getMemory();
     Locomotion getLocomotion();
+    ALocation getLocation();
+    boolean isAlive();
 }
