@@ -9,6 +9,8 @@ public class DataObject {
     public int y;
     public int z;
 
+    public DataObject() {}
+
     public DataObject(int[] buf) {
         update(buf);
     }

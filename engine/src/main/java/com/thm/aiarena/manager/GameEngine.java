@@ -1,6 +1,5 @@
 package com.thm.aiarena.manager;
 
-import com.thm.aiarena.array.SimpleResource;
 import com.thm.aiarena.model.AArena;
 import com.thm.aiarena.model.AObject;
 import com.thm.aiarena.model.aobject.Container;
@@ -50,7 +49,7 @@ public class GameEngine {
         arena.getAllAObjects().forEach(obj -> {
             Container container = obj.getContainer();
             int spiece = obj.getTransmitter().response();
-            int inventory = container.inventory(SimpleResource.TYPE);
+            int inventory = container.inventory(1); // this is: SimpleResource.TYPE
             totalInventory.getAndAdd(inventory);
             totalCount.incrementAndGet();
             minInventory.set(Math.min(minInventory.get(), inventory));

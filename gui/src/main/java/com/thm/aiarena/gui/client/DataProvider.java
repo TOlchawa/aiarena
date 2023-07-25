@@ -2,14 +2,10 @@ package com.thm.aiarena.gui.client;
 
 import com.thm.aiarena.communication.DataListener;
 import com.thm.aiarena.communication.DataObject;
-import com.thm.aiarena.communication.ObjectStreamClient;
+import com.thm.aiarena.communication.DataObjectClient;
 import com.thm.aiarena.gui.GUI;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.nio.channels.SocketChannel;
 import java.util.concurrent.Executors;
 
 import static com.thm.aiarena.communication.DataObject.ADD_OBJECT;
@@ -22,7 +18,7 @@ public class DataProvider implements DataListener {
     public DataProvider(GUI gui) throws IOException {
         this.gui = gui;
         Executors.newSingleThreadExecutor().submit( () -> {
-            new ObjectStreamClient(this);
+            new DataObjectClient(this);
         });
     }
 
